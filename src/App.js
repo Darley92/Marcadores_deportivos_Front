@@ -9,12 +9,15 @@ import { Component } from "react";
 
 
 const url = "http://localhost:9000/api/usuarios";
+const field_id = '/usu_id/'
 
 class App extends Component {
 
   state = { 
     data:[], 
     modalInsertar: false,
+    modalEliminar: false,
+    tipoModal:'',
     form:{
       usu_id:'',
       usu_email:'',
@@ -47,6 +50,44 @@ class App extends Component {
 
   }
 
+  seleccionarUsuario=(usuario)=>{
+    this.setState({
+      tipoModal: 'actualizar',
+      form: {
+        usu_id: usuario.usu_id,
+        usu_email: usuario.usu_email,
+        usu_clave: usuario.usu_clave,
+        usu_nombres: usuario.usu_nombres,
+        usu_apellidos: usuario.usu_apellidos
+      }
+    })
+  }
+  modalInsertar = () =>{
+    this.setState({modalInsertar:!this.state.modalInsertar})
+  }
+
+  modalEliminar = () =>{
+    this.setState({modalEliminar:!this.state.modalEliminar})
+  }
+
+  peticionPut = () => {
+    axios.put(url+field_id+this.state.form.usu_id,this.state.form).then(response => {
+      this.modalInsertar()
+      this.peticionGet()
+    }).catch(error => {
+      console.log(error.message);
+    })
+  }
+
+  peticionDelete = () => {
+    axios.delete(url+field_id+this.state.form.usu_id).then(response => {
+      this.modalEliminar()
+      this.peticionGet()
+    }).catch(error => {
+      console.log(error.message);
+    })
+  }
+
   modalInsertar=()=>{
     this.setState({modalInsertar: ! this.state.modalInsertar})
   }
@@ -67,12 +108,15 @@ class App extends Component {
   }
 
   render() {
+
+    const form =this.state.form
+
     return (
       <div className="App">
         <br />
         <br />
         <br />
-        <button className="btn btn-success" onClick={() => this.modalInsertar()}>Agregar Usuario</button>
+        <button className="btn btn-success" onClick={() =>{this.setState({form: null,tipoModal:'insertar'}); this.modalInsertar()}}>Agregar Usuario</button>
         <br />
         <br />
         <table className="table ">
@@ -96,9 +140,9 @@ class App extends Component {
                   <td>{usuario.usu_nombres}</td>
                   <td>{usuario.usu_apellidos}</td>
                   <td>
-                    <button className="btn btn-primary"><FontAwesomeIcon icon={faEdit}/></button>
+                    <button className="btn btn-primary"><FontAwesomeIcon icon={faEdit} onClick={()=> {this.seleccionarUsuario(usuario); this.modalInsertar()}}/></button>
                     {"  "}
-                    <button className="btn btn-danger"><FontAwesomeIcon icon={faTrashAlt}/></button>
+                    <button className="btn btn-danger"><FontAwesomeIcon icon={faTrashAlt} onClick = {()=>{this.seleccionarUsuario(usuario); this.modalEliminar()}}/></button>
                   </td>
                 </tr>
               )
@@ -115,13 +159,14 @@ class App extends Component {
             <div>
               <label htmlFor="usu_id">ID</label>
               <input 
-              value={this.state.data.length+1}
+              //value={this.state.data.length+1}
               className="form-control" 
               type="text" 
               name="usu_id" 
               id="usu_id" 
               readOnly 
-              onChange={this.handleChange}>
+              onChange={this.handleChange}
+                value = {form ? form.usu_id : this.state.data.length+1}>
               </input>
               <br />
               <label htmlFor="usu_email">Email</label>
@@ -129,7 +174,8 @@ class App extends Component {
               type="text" 
               name="usu_email" 
               id="usu_email" 
-              onChange={this.handleChange}>
+              onChange={this.handleChange}
+                value ={form ? form.usu_email : ''}>
               </input>
               <br />
               <label htmlFor="usu_clave">Clave</label>
@@ -137,31 +183,52 @@ class App extends Component {
               type="text" 
               name="usu_clave" 
               id="usu_clave" 
-              onChange={this.handleChange}></input>
+              onChange={this.handleChange}
+                value ={form ? form.usu_clave : ''}>
+              </input>
               <br />
               <label htmlFor="usu_nombres">Nombres</label>
               <input className="form-control" 
               type="text" 
               name="usu_nombres" 
               id="usu_nombres" 
-              onChange={this.handleChange}></input>
+              onChange={this.handleChange}
+                value ={form ? form.usu_nombres : ''}>
+              </input>
               <br />
               <label htmlFor="usu_apellidos">Apellidos</label>
               <input className="form-control" 
               type="text" 
               name="usu_apellidos" 
               id="usu_apellidos" 
-              onChange={this.handleChange}></input>
+              onChange={this.handleChange}
+                value ={form ? form.usu_apellidos : ''}>
+              </input>
               <br />
             </div>
 
           </ModalBody>
           <ModalFooter>
+            {
+              this.state.tipoModal == 'insertar' ?
             <button className="btn btn-success" onClick={() => this.peticionPost()}>Insertar</button>
+              : <button className="btn btn-success" onClick={()=> this.peticionPut()} >Modificar</button>
+            }
             <button className="btn btn-danger" onClick={() => this.modalInsertar()}>Cancelar</button>
 
           </ModalFooter>
+          </Modal>
+
+        <Modal isOpen={this.state.modalEliminar}>
+          <ModalBody>
+            ¿Estas seguro que deseas eliminar?
+          </ModalBody>
+          <ModalFooter>
+            <button className="btn btn-danger" onClick={()=> this.peticionDelete()} >Si</button>
+            <button className="btn btn-success" onClick={()=> this.modalEliminar()} >No</button>
+          </ModalFooter>
         </Modal>
+        
 
 
 
