@@ -12,6 +12,13 @@ const url3 = "http://localhost:5000/equipos";
 const url4 = "http://localhost:5000/marcadores/5";
 
 const cookies = new Cookies();
+const date = new Date();
+const year = date.getFullYear();
+const day = date.getDate();
+const month = date.getMonth() + 1;       
+const fecha =`${year}-${month}-${day}`
+const time = date.toLocaleTimeString('it-IT');
+const usu = cookies.get("_id");
 
 class PageEventos extends Component {
 
@@ -42,6 +49,19 @@ class PageEventos extends Component {
         form3: {
             _id: '',
             equi_nombre: ''
+        },
+        form4: {
+            _id: '',
+            fecha: '',
+            horaEvento: '',
+            fechaRegistro: '',
+            horaRegistro: '',
+            equi1: '',
+            equi2: '',
+            marca1: '',
+            marca2: '',
+            deporte: '', 
+            usuario:''
         },
 
         stateLogin: false
@@ -163,7 +183,7 @@ class PageEventos extends Component {
                 marca1: evento.marca1,
                 marca2: evento.marca2,
                 deporte: evento.deporte,
-                usuario: evento.usuario,
+                usuario: evento.usuario
             }
         })
     }
@@ -177,10 +197,14 @@ class PageEventos extends Component {
     }
 
     handleChange = async e => {  /// función para capturar os datos del usuario. Es en 2do plano debe ser asincrona
+        console.log(this.state.form)
         e.persist();           /// y por reso debemos especificar persistencia
         await this.setState({   /// await regresa la ejecución de la función asincrona despues de terminar
             form: {
                 ...this.state.form, /// esta linea sirve para conservar los datos que ya tenia el arreglo
+                mar_fechaRegistro:fecha,
+                mar_horaRegistro: time,
+                usu_id:usu,
                 [e.target.name]: e.target.value  /// los nombres de los imputs deben ser iguales a los del arreglo
             }
 
@@ -188,7 +212,7 @@ class PageEventos extends Component {
         console.log(this.state.form);  /// probar por consola lo que se guarda
     }
 
-    componentDidMount() {
+    componentDidMount() {     
         if (cookies.get("usu_nombres")) {
             this.setState({ stateLogin: true })
         } else {
@@ -196,7 +220,7 @@ class PageEventos extends Component {
             //window.location.href="./" ///redirigir al inicio
         }
         console.log(this.state.stateLogin)
-        if (cookies.get("per_id") === "639e6e2ae186e97c01464ddd") {
+        if (cookies.get("per_id") === "63a1200b4e37aa088590933d"){
             this.setState({ usuadmin: true })
         }
         else {
@@ -206,7 +230,28 @@ class PageEventos extends Component {
         this.peticionGet();
         this.peticionGet2();
         this.peticionGet3();
+        //this.fechaActual();
+        //this.horaActual()
     }
+
+    fechaActual = async () => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const day = date.getDate();
+        const month = date.getMonth() + 1;       
+        const fecha =`"${year}-${month}-${day}"`
+        console.log(fecha)
+        const time = date.toLocaleTimeString('it-IT');
+        //console.log(time)
+        await this.setState({form:{mar_fechaRegistro:fecha,mar_horaRegistro: time}});
+        //console.log(this.state.form);
+    }
+
+    /*horaActual = () => {
+        const date = new Date();
+        const time = date.toLocaleTimeString('it-IT');
+        console.log(time)
+    }*/
 
     render() {
 
@@ -241,9 +286,9 @@ class PageEventos extends Component {
                                         <td hidden={!this.state.usuadmin} className="td">{evento._id}</td>
                                         <td className="td">{evento.deporte}</td>
                                         <td hidden={!this.state.usuadmin} className="td">{evento.usuario}</td>
-                                        <td hidden={!this.state.usuadmin} className="td">{evento.fecha}</td>
+                                        <td hidden={!this.state.usuadmin} className="td">{evento.fecha.slice(0, 10)}</td>
                                         <td hidden={!this.state.usuadmin} className="td">{evento.horaEvento}</td>
-                                        <td hidden={!this.state.usuadmin} className="td">{evento.fechaRegistro}</td>
+                                        <td hidden={!this.state.usuadmin} className="td">{evento.fechaRegistro.slice(0, 10)}</td>
                                         <td hidden={!this.state.usuadmin} className="td">{evento.horaRegistro}</td>
                                         <td className="td">{evento.equi1}</td>
                                         <td className="td">{evento.marca1}</td>
@@ -284,9 +329,9 @@ class PageEventos extends Component {
                                 value={form ? form._id : this.state.data.length + 1}
                             ></input>
 
-                            <label htmlFor="mar_id">id evento</label>
+                            <label htmlFor="mar_id"hidden={!this.state.usuadmin}>id evento</label>
                             <input
-                                className="form-control"
+                                className="form-control"hidden={!this.state.usuadmin}
                                 type="text"
                                 name="mar_id"
                                 id="mar_id"
@@ -295,7 +340,10 @@ class PageEventos extends Component {
                             ></input>
 
                             <label htmlFor="dep_id" hidden={!this.state.usuadmin}>Deporte</label>
-                            <select class="form-select" hidden={!this.state.usuadmin}
+                            <select class="form-select"
+                             name="dep_id"
+                             id="dep_id"
+                             hidden={!this.state.usuadmin}
                                 value={form ? form.dep_id : ''}
                                 aria-label="Default select example"
                                 onChange={this.handleChange}>
@@ -304,7 +352,6 @@ class PageEventos extends Component {
                                     return (
                                         <option value={Deportes._id}>{Deportes.dep_nombre}</option>
                                     );
-
                                 })}
                             </select>
 
@@ -317,6 +364,7 @@ class PageEventos extends Component {
                                 onChange={this.handleChange}
                                 value={form ? form.mar_fechaEvento : ''}
                             ></input>
+
                             <label htmlFor="mar_horaEvento" hidden={!this.state.usuadmin}>Hora Evento</label>
                             <input hidden={!this.state.usuadmin}
                                 className="form-control"
@@ -326,28 +374,12 @@ class PageEventos extends Component {
                                 onChange={this.handleChange}
                                 value={form ? form.mar_horaEvento : ''}
                             ></input>
-                            <label htmlFor="mar_fechaRegistro" hidden={!this.state.usuadmin}>Fecha Registro</label>
-                            <input hidden={!this.state.usuadmin}
-                                className="form-control"
-                                type="date"
-                                name="mar_fechaRegistro"
-                                id="mar_fechaRegistro"
-                                onChange={this.handleChange}
-                                value={form ? form.mar_fechaRegistro : ''}
-                            ></input>
-
-                            <label htmlFor="mar_horaRegistro" hidden={!this.state.usuadmin}>Hora Registro</label>
-                            <input hidden={!this.state.usuadmin}
-                                className="form-control"
-                                type="time"
-                                name="mar_horaRegistro"
-                                id="mar_horaRegistro"
-                                onChange={this.handleChange}
-                                value={form ? form.mar_horaRegistro : ''}
-                            ></input>
 
                             <label htmlFor="equi_id" hidden={!this.state.usuadmin}>Equipo 1</label>
-                            <select class="form-select" hidden={!this.state.usuadmin}
+                            <select class="form-select" 
+                             name="equi_id"
+                             id="equi_id"
+                            hidden={!this.state.usuadmin}
                                 value={form ? form.equi_id : ''}
                                 aria-label="Default select example"
                                 onChange={this.handleChange}>
@@ -372,7 +404,10 @@ class PageEventos extends Component {
                             ></input>
 
                             <label htmlFor="equi_id2" hidden={!this.state.usuadmin}>Equipo 2</label>
-                            <select class="form-select" hidden={!this.state.usuadmin}
+                            <select class="form-select" 
+                             name="equi_id2"
+                             id="equi_id2"
+                            hidden={!this.state.usuadmin}
                                 value={form ? form.equi_id2 : ''}
                                 aria-label="Default select example" onChange={this.handleChange}>
                                 <option selected>seleccionar</option>

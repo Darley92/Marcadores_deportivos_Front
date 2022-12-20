@@ -24,7 +24,7 @@ class MenuInicial extends Component {
 
     }
     console.log(this.state.stateLogin)
-    if (cookies.get("per_id") === "639e6e2ae186e97c01464ddd") {
+    if (cookies.get("per_id") === "63a1200b4e37aa088590933d") {
       this.setState({ usuadmin: true })
     }
     else {
