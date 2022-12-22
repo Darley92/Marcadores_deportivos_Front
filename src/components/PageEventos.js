@@ -285,8 +285,8 @@ class PageEventos extends Component {
                                         <td hidden={!this.state.usuadmin} className="td">{evento.mar_fechaRegistro.slice(0, 10)}</td>
                                         <td hidden={!this.state.usuadmin} className="td">{evento.mar_horaRegistro}</td>
                                         <td className="td">{evento.equipo1}</td>
-                                        <td className="td">{evento.equipo2}</td>
                                         <td className="td">{evento.mar_marcadoresqui1}</td>
+                                        <td className="td">{evento.equipo2}</td>
                                         <td className="td">{evento.mar_marcadoresqui2}</td>
                                         <td>
                                             <button className="btn btn-primary">
