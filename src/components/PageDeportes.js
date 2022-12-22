@@ -88,7 +88,7 @@ class PageDeportes extends Component{
           return "Dato Vacio"
         }
     
-        await axios.get(process.env.REACT_APP_VERIFICAR+"deportes/dep_nombre/"+dep_nombre)
+        await axios.get(process.env.REACT_APP_VERIFICAR+"deportes/dep_nombre/"+ this.state.form.dep_nombre)
         .then(response => {
             alert('Deporte ya existe')
             return "Deporte ya existe"
