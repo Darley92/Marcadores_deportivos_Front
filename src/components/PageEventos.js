@@ -3,20 +3,15 @@ import axios from "axios";
 import { Modal, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faListSquares, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Cookies from "universal-cookie";
-
-const url = "http://localhost:5000/marcadores";
-const url2 = "http://localhost:5000/deportes";
-const url3 = "http://localhost:5000/equipos";
-const url4 = "http://localhost:5000/marcadores/5";
 
 const cookies = new Cookies();
 const date = new Date();
 const year = date.getFullYear();
 const day = date.getDate();
-const month = date.getMonth() + 1;       
-const fecha =`${year}-${month}-${day}`
+const month = date.getMonth() + 1;
+const fecha = `${year}-${month}-${day}`
 const time = date.toLocaleTimeString('it-IT');
 const usu = cookies.get("_id");
 
@@ -27,18 +22,25 @@ class PageEventos extends Component {
         data: [],
         data2: [],
         data3: [],
+        fecha:'',
+        time:'',
         modalInsertar: false,
         modalEliminar: false,
         tipoModal: '',
         form: {
+            _id: '',
             dep_id: '',
+            deporte:'',
             usu_id: '',
+            usuario:'',
             mar_fechaEvento: '',
             mar_horaEvento: '',
             mar_fechaRegistro: '',
             mar_horaRegistro: '',
             equi_id: '',
+            equipo1:'',
             equi_id2: '',
+            equipo2:'',
             mar_marcadoresqui1: '',
             mar_marcadoresqui2: ''
         },
@@ -50,39 +52,23 @@ class PageEventos extends Component {
             _id: '',
             equi_nombre: ''
         },
-        form4: {
-            _id: '',
-            fecha: '',
-            horaEvento: '',
-            fechaRegistro: '',
-            horaRegistro: '',
-            equi1: '',
-            equi2: '',
-            marca1: '',
-            marca2: '',
-            deporte: '', 
-            usuario:''
-        },
 
         stateLogin: false
     };
 
     cerrarSesion() {
-        ///let salir=confirm("Deseas cerrar sesión?")
-        //if(confirm('Realmente deseas cerrar sesión?')){return}
         cookies.remove("usu_id", { path: "/" })
         cookies.remove("usu_email", { path: "/" })
         cookies.remove("usu_nombres", { path: "/" })
         cookies.remove("usu_apellidos", { path: "/" })
         cookies.remove("per_id", { path: "/" })
-        //window.location.href="./"
+
         this.setState({ stateLogin: false })
         this.setState({ usuadmin: false })
     }
 
     peticionGet2 = () => {
-        axios.get(url2).then((response) => {
-            //console.log(response.data);
+        axios.get(process.env.REACT_APP_DEPORTES).then((response) => {
             this.setState({ data2: response.data });
 
         })
@@ -92,8 +78,7 @@ class PageEventos extends Component {
     };
 
     peticionGet3 = () => {
-        axios.get(url3).then((response) => {
-            //console.log(response.data);
+        axios.get(process.env.REACT_APP_EQUIPOS).then((response) => {
             this.setState({ data3: response.data });
 
         })
@@ -124,8 +109,7 @@ class PageEventos extends Component {
     }
 
     peticionGet = () => {
-        axios.get(url4).then((response) => {
-            //console.log(response.data);
+        axios.get(process.env.REACT_APP_MARCADORES5).then((response) => {
             this.setState({ data: response.data });
 
         })
@@ -136,8 +120,13 @@ class PageEventos extends Component {
 
     peticionPost = async () => {
         delete this.state.form._id
-        await axios.post(url, this.state.form).then((response) => {
-            this.modalInsertar() //cerramos la modal form
+        delete this.state.form.deporte
+        delete this.state.form.usuario
+        delete this.state.form.equipo1
+        delete this.state.form.equipo2
+        console.log(this.state.form)
+        await axios.post(process.env.REACT_APP_MARCADORES, this.state.form).then((response) => {
+            this.modalInsertar() 
             this.peticionGet()
         })
             .catch(error => {
@@ -146,10 +135,14 @@ class PageEventos extends Component {
     }
 
     peticionPut = () => {
-        console.log(url + '/' + this.state.form._id)
-        axios.put(url + '/' + this.state.form._id, this.state.form)
+        delete this.state.form.deporte
+        delete this.state.form.usuario
+        delete this.state.form.equipo1
+        delete this.state.form.equipo2
+        console.log(process.env.REACT_APP_MARCADORES + '/' + this.state.form._id)
+        axios.put(process.env.REACT_APP_MARCADORES + '/' + this.state.form._id, this.state.form)
             .then((response) => {
-                this.modalInsertar() //cerramos la modal form
+                this.modalInsertar() 
                 this.peticionGet()
             })
             .catch(error => {
@@ -158,10 +151,10 @@ class PageEventos extends Component {
     }
 
     peticionDelete = () => {
-        console.log(url + '/' + this.state.form._id)
-        axios.delete(url + '/' + this.state.form._id, this.state.form)
+        console.log(process.env.REACT_APP_MARCADORES + '/' + this.state.form._id)
+        axios.delete(process.env.REACT_APP_MARCADORES + '/' + this.state.form._id, this.state.form)
             .then((response) => {
-                this.modalEliminar() //cerramos la modal form
+                this.modalEliminar() 
                 this.peticionGet()
             })
             .catch(error => {
@@ -172,55 +165,67 @@ class PageEventos extends Component {
     seleccionarEvento = (evento) => {
         this.setState({
             tipoModal: 'actualizar',
-            form4: {
+            form: {
                 _id: evento._id,
-                fecha: evento.fecha,
-                horaEvento: evento.horaEvento,
-                fechaRegistro: evento.fechaRegistro,
-                horaRegistro: evento.horaRegistro,
-                equi1: evento.equi1,
-                equi2: evento.equi2,
-                marca1: evento.marca1,
-                marca2: evento.marca2,
+                dep_id: evento.dep_id,
                 deporte: evento.deporte,
-                usuario: evento.usuario
+                usu_id: evento.usu_id,
+                usuario: evento.usuario,
+                mar_fechaEvento: evento.mar_fechaEvento,
+                mar_horaEvento: evento.mar_horaEvento,
+                mar_fechaRegistro: evento.mar_fechaRegistro,
+                mar_horaRegistro: evento.mar_horaRegistro,
+                equi_id: evento.equi_id,
+                equipo1: evento.equipo1,
+                equi_id2: evento.equi_id2,
+                equipo2: evento.equipo2,
+                mar_marcadoresqui1: evento.mar_marcadoresqui1,
+                mar_marcadoresqui2: evento.mar_marcadoresqui2
             }
+        })
+        this.setState({    
+            fecha:evento.mar_fechaRegistro,
+            time:evento.mar_horaRegistro
         })
     }
 
     modalInsertar = () => {
-        this.setState({ modalInsertar: !this.state.modalInsertar })
+        this.setState({ modalInsertar: !this.state.modalInsertar})
+    }
+
+    insertarFechaHora = () => {
+        this.setState({
+            fecha: `${year}-${month}-${day}`,
+            time: date.toLocaleTimeString('it-IT')
+        })
     }
 
     modalEliminar = () => {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
 
-    handleChange = async e => {  /// función para capturar os datos del usuario. Es en 2do plano debe ser asincrona
-        console.log(this.state.form)
-        e.persist();           /// y por reso debemos especificar persistencia
-        await this.setState({   /// await regresa la ejecución de la función asincrona despues de terminar
+    handleChange = async e => {  
+        e.persist();           
+        await this.setState({   
             form: {
-                ...this.state.form, /// esta linea sirve para conservar los datos que ya tenia el arreglo
-                mar_fechaRegistro:fecha,
-                mar_horaRegistro: time,
-                usu_id:usu,
-                [e.target.name]: e.target.value  /// los nombres de los imputs deben ser iguales a los del arreglo
+                ...this.state.form, 
+                mar_fechaRegistro: this.state.fecha,
+                mar_horaRegistro: this.state.time,
+                usu_id: cookies.get("_id"),
+                [e.target.name]: e.target.value  
             }
-
         });
-        console.log(this.state.form);  /// probar por consola lo que se guarda
+        console.log(this.state.form);
     }
 
-    componentDidMount() {     
+    componentDidMount() {
         if (cookies.get("usu_nombres")) {
             this.setState({ stateLogin: true })
         } else {
             this.setState({ stateLogin: false })
-            //window.location.href="./" ///redirigir al inicio
         }
         console.log(this.state.stateLogin)
-        if (cookies.get("per_id") === "63a1200b4e37aa088590933d"){
+        if (cookies.get("per_id") === process.env.REACT_APP_IDADMIN) {
             this.setState({ usuadmin: true })
         }
         else {
@@ -230,28 +235,20 @@ class PageEventos extends Component {
         this.peticionGet();
         this.peticionGet2();
         this.peticionGet3();
-        //this.fechaActual();
-        //this.horaActual()
+
     }
 
     fechaActual = async () => {
         const date = new Date();
         const year = date.getFullYear();
         const day = date.getDate();
-        const month = date.getMonth() + 1;       
-        const fecha =`"${year}-${month}-${day}"`
+        const month = date.getMonth() + 1;
+        const fecha = `"${year}-${month}-${day}"`
         console.log(fecha)
         const time = date.toLocaleTimeString('it-IT');
-        //console.log(time)
-        await this.setState({form:{mar_fechaRegistro:fecha,mar_horaRegistro: time}});
-        //console.log(this.state.form);
+        await this.setState({ form: { mar_fechaRegistro: fecha, mar_horaRegistro: time } });
     }
 
-    /*horaActual = () => {
-        const date = new Date();
-        const time = date.toLocaleTimeString('it-IT');
-        console.log(time)
-    }*/
 
     render() {
 
@@ -286,21 +283,25 @@ class PageEventos extends Component {
                                         <td hidden={!this.state.usuadmin} className="td">{evento._id}</td>
                                         <td className="td">{evento.deporte}</td>
                                         <td hidden={!this.state.usuadmin} className="td">{evento.usuario}</td>
-                                        <td hidden={!this.state.usuadmin} className="td">{evento.fecha.slice(0, 10)}</td>
-                                        <td hidden={!this.state.usuadmin} className="td">{evento.horaEvento}</td>
-                                        <td hidden={!this.state.usuadmin} className="td">{evento.fechaRegistro.slice(0, 10)}</td>
-                                        <td hidden={!this.state.usuadmin} className="td">{evento.horaRegistro}</td>
-                                        <td className="td">{evento.equi1}</td>
-                                        <td className="td">{evento.marca1}</td>
-                                        <td className="td">{evento.equi2}</td>
-                                        <td className="td">{evento.marca2}</td>
+                                        <td hidden={!this.state.usuadmin} className="td">{evento.mar_fechaEvento.slice(0, 10)}</td>
+                                        <td hidden={!this.state.usuadmin} className="td">{evento.mar_horaEvento}</td>
+                                        <td hidden={!this.state.usuadmin} className="td">{evento.mar_fechaRegistro.slice(0, 10)}</td>
+                                        <td hidden={!this.state.usuadmin} className="td">{evento.mar_horaRegistro}</td>
+                                        <td className="td">{evento.equipo1}</td>
+                                        <td className="td">{evento.equipo2}</td>
+                                        <td className="td">{evento.mar_marcadoresqui1}</td>
+                                        <td className="td">{evento.mar_marcadoresqui2}</td>
                                         <td>
                                             <button className="btn btn-primary">
-                                                <FontAwesomeIcon icon={faEdit} hidden={!this.state.stateLogin} onClick={() => { this.seleccionarEvento(evento); this.modalInsertar() }} />
+                                                <FontAwesomeIcon icon={faEdit} 
+                                                hidden={!this.state.stateLogin} 
+                                                onClick={() => { this.seleccionarEvento(evento); this.modalInsertar()}} />
                                             </button>
                                             {"  "}
                                             <button className="btn btn-danger">
-                                                <FontAwesomeIcon icon={faTrashAlt} hidden={!this.state.usuadmin} onClick={() => { this.seleccionarEvento(evento); this.modalEliminar() }} />
+                                                <FontAwesomeIcon icon={faTrashAlt} 
+                                                hidden={!this.state.usuadmin} 
+                                                onClick={() => { this.seleccionarEvento(evento); this.modalEliminar() }} />
                                             </button>
                                         </td>
                                     </tr>
@@ -310,7 +311,10 @@ class PageEventos extends Component {
                     </div>
                 </table>
                 <div className="button-item">
-                    <button className="btn btn-success" hidden={!this.state.usuadmin} onClick={() => { this.setState({ form: null, tipoModal: 'insertar' }); this.modalInsertar() }}>Agregar Evento</button>
+                    <button className="btn btn-success" 
+                    hidden={!this.state.usuadmin} 
+                    onClick={() => { this.setState({ form: null, tipoModal: 'insertar' }); 
+                    this.modalInsertar();this.insertarFechaHora() }}>Agregar Evento</button>
                 </div>
 
                 <Modal isOpen={this.state.modalInsertar}>
@@ -324,26 +328,16 @@ class PageEventos extends Component {
                                 type="hidden"
                                 name="_id"
                                 id="_id"
-                                readOnly // Solo lectura
+                                readOnly
                                 onChange={this.handleChange}
                                 value={form ? form._id : this.state.data.length + 1}
                             ></input>
 
-                            <label htmlFor="mar_id"hidden={!this.state.usuadmin}>id evento</label>
-                            <input
-                                className="form-control"hidden={!this.state.usuadmin}
-                                type="text"
-                                name="mar_id"
-                                id="mar_id"
-                                onChange={this.handleChange}
-                                value={form ? form.mar_id : ''}
-                            ></input>
-
                             <label htmlFor="dep_id" hidden={!this.state.usuadmin}>Deporte</label>
                             <select class="form-select"
-                             name="dep_id"
-                             id="dep_id"
-                             hidden={!this.state.usuadmin}
+                                name="dep_id"
+                                id="dep_id"
+                                hidden={!this.state.usuadmin}
                                 value={form ? form.dep_id : ''}
                                 aria-label="Default select example"
                                 onChange={this.handleChange}>
@@ -376,10 +370,10 @@ class PageEventos extends Component {
                             ></input>
 
                             <label htmlFor="equi_id" hidden={!this.state.usuadmin}>Equipo 1</label>
-                            <select class="form-select" 
-                             name="equi_id"
-                             id="equi_id"
-                            hidden={!this.state.usuadmin}
+                            <select class="form-select"
+                                name="equi_id"
+                                id="equi_id"
+                                hidden={!this.state.usuadmin}
                                 value={form ? form.equi_id : ''}
                                 aria-label="Default select example"
                                 onChange={this.handleChange}>
@@ -387,7 +381,6 @@ class PageEventos extends Component {
                                 {this.state.data3.map((Equipos) => {
                                     return (
                                         <option value={Equipos._id}>{Equipos.equi_nombre}</option>
-
                                     );
 
                                 })}
@@ -404,10 +397,10 @@ class PageEventos extends Component {
                             ></input>
 
                             <label htmlFor="equi_id2" hidden={!this.state.usuadmin}>Equipo 2</label>
-                            <select class="form-select" 
-                             name="equi_id2"
-                             id="equi_id2"
-                            hidden={!this.state.usuadmin}
+                            <select class="form-select"
+                                name="equi_id2"
+                                id="equi_id2"
+                                hidden={!this.state.usuadmin}
                                 value={form ? form.equi_id2 : ''}
                                 aria-label="Default select example" onChange={this.handleChange}>
                                 <option selected>seleccionar</option>

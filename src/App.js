@@ -12,6 +12,7 @@ import PageUsuarios from './components/PageUsuarios';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'; 
 import PageLogin from './components/PageLogin';
 import MenuInicial from './components/MenuInicial';
+import PageRegistro from './components/PageRegistro';
 
 class App extends Component {
   render() {
@@ -27,6 +28,7 @@ class App extends Component {
           <Route path="/PageEquipos" element={<PageEquipos />}/>
           <Route path="/PageEventos" element={<PageEventos />}/>
           <Route path="/PageUsuarios" element={<PageUsuarios />}/>
+          <Route path="/PageRegistro" element={<PageRegistro />}/>
         </Routes>
       </Router>
       </>

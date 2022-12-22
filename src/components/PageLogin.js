@@ -4,8 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import axios from "axios";
 import Cookies from "universal-cookie";
 
-const url = "http://localhost:5000/usuarios";
-
 const cookies = new Cookies();
 
 class PageLogin extends Component {
@@ -16,14 +14,14 @@ class PageLogin extends Component {
     }
   }
 
-  handleChange = async e => {  /// función para capturar os datos del usuario. Es en 2do plano debe ser asincrona
-    await this.setState({   /// await regresa la ejecución de la función asincrona despues de terminar
+  handleChange = async e => {  
+    await this.setState({   
       form: {
-        ...this.state.form, /// esta linea sirve para conservar los datos que ya tenia el arreglo
-        [e.target.name]:e.target.value  /// los nombres de los imputs deben ser iguales a los del arreglo
+        ...this.state.form, 
+        [e.target.name]:e.target.value  
       }
     })
-    console.log(this.state.form);  /// probar por consola lo que se guarda
+    console.log(this.state.form);  
   }
 
   iniciarSesion = async()=>{
@@ -33,12 +31,9 @@ class PageLogin extends Component {
       alert('Se requieren todos los datos')
       return 'Datos vacios'
     }
-    console.log(name)
-    console.log(pwd)
 
-    await axios.get(url+"/"+name+"/"+pwd)
+    await axios.get(process.env.REACT_APP_USUARIOS+"/"+name+"/"+pwd)
       .then(response=>{
-        //console.log(response.data)
         return response.data
       }).then(response=>{
           console.log(response)
@@ -48,12 +43,10 @@ class PageLogin extends Component {
           cookies.set("usu_nombres",response.usu_nombres,{path:"/"})
           cookies.set("usu_apellidos",response.usu_apellidos,{path:"/"})
           cookies.set("per_id",response.per_id,{path:"/"})
-          //console.log(response.per_id)
           alert("Bienvenid@ "+response.usu_nombres)
           this.setState()
           window.location.href='./PageInicio'
         }else{
-          //alert("Verificar usuario y/o contraseña")
         }
       })
       .catch(error=>{

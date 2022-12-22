@@ -5,8 +5,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-const url = "http://localhost:5000/deportes";
-
 class PageDeportes extends Component{
 
     
@@ -22,8 +20,7 @@ class PageDeportes extends Component{
     };
 
     peticionGet = () => {
-        axios.get(url).then((response) => {
-            //console.log(response.data);
+        axios.get(process.env.REACT_APP_DEPORTES).then((response) => {
             this.setState({ data: response.data });
         })
             .catch(error => {
@@ -33,8 +30,8 @@ class PageDeportes extends Component{
 
     peticionPost = async () => {
         delete this.state.form._id
-        await axios.post(url, this.state.form).then((response) => {
-            this.modalInsertar() //cerramos la modal form
+        await axios.post(process.env.REACT_APP_DEPORTES, this.state.form).then((response) => {
+            this.modalInsertar() 
             this.peticionGet()
         })
             .catch(error => {
@@ -43,10 +40,10 @@ class PageDeportes extends Component{
     }
 
     peticionPut = () => {
-        console.log(url + '/' + this.state.form._id)
-        axios.put(url + '/' + this.state.form._id, this.state.form)
+        console.log(process.env.REACT_APP_DEPORTES + '/' + this.state.form._id)
+        axios.put(process.env.REACT_APP_DEPORTES + '/' + this.state.form._id, this.state.form)
             .then((response) => {
-                this.modalInsertar() //cerramos la modal form
+                this.modalInsertar() 
                 this.peticionGet()
             })
             .catch(error => {
@@ -55,10 +52,10 @@ class PageDeportes extends Component{
     }
 
     peticionDelete = () => {
-        console.log(url + '/' + this.state.form._id)
-        axios.delete(url + '/' + this.state.form._id, this.state.form)
+        console.log(process.env.REACT_APP_DEPORTES + '/' + this.state.form._id)
+        axios.delete(process.env.REACT_APP_DEPORTES + '/' + this.state.form._id, this.state.form)
             .then((response) => {
-                this.modalEliminar() //cerramos la modal form
+                this.modalEliminar() 
                 this.peticionGet()
             })
             .catch(error => {
@@ -84,15 +81,15 @@ class PageDeportes extends Component{
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
 
-    handleChange = async e => {  /// función para capturar os datos del usuario. Es en 2do plano debe ser asincrona
-        e.persist();           /// y por reso debemos especificar persistencia
-        await this.setState({   /// await regresa la ejecución de la función asincrona despues de terminar
+    handleChange = async e => {  
+        e.persist();           
+        await this.setState({   
             form: {
-                ...this.state.form, /// esta linea sirve para conservar los datos que ya tenia el arreglo
-                [e.target.name]: e.target.value  /// los nombres de los imputs deben ser iguales a los del arreglo
+                ...this.state.form, 
+                [e.target.name]: e.target.value  
             }
         });
-        console.log(this.state.form);  /// probar por consola lo que se guarda
+        console.log(this.state.form);  
     }
 
     componentDidMount() {

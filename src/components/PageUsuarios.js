@@ -5,12 +5,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
-const url = "http://localhost:5000/usuarios";
-
 class PageUsuarios extends Component {
 
     state = {
         data: [],
+        data2:[],
         modalInsertar: false,
         modalEliminar: false,
         tipoModal: '',
@@ -20,14 +19,28 @@ class PageUsuarios extends Component {
             usu_email: '',
             usu_clave: '',
             usu_nombres: '',
-            usu_apellidos: ''
+            usu_apellidos: '',
+            per_id:''
+        },
+        form2:{
+            _id:'',
+            per_nombre:''
         }
     };
 
     peticionGet = () => {
-        axios.get(url).then((response) => {
-            //console.log(response.data);
+        axios.get(process.env.REACT_APP_USUARIOS).then((response) => {
             this.setState({ data: response.data });
+        })
+            .catch(error => {
+                console.log(error.message)
+            })
+    };
+
+    peticionGet2 = () => {
+        axios.get(process.env.REACT_APP_PERMISOS).then((response) => {
+            console.log(response.data);
+            this.setState({ data2: response.data });
         })
             .catch(error => {
                 console.log(error.message)
@@ -36,8 +49,8 @@ class PageUsuarios extends Component {
 
     peticionPost = async () => {
         delete this.state.form._id
-        await axios.post(url, this.state.form).then((response) => {
-            this.modalInsertar() //cerramos la modal form
+        await axios.post(process.env.REACT_APP_USUARIOS, this.state.form).then((response) => {
+            this.modalInsertar() 
             this.peticionGet()
         })
             .catch(error => {
@@ -46,10 +59,10 @@ class PageUsuarios extends Component {
     }
 
     peticionPut = () => {
-        console.log(url + '/' + this.state.form._id)
-        axios.put(url + '/' + this.state.form._id, this.state.form)
+        console.log(process.env.REACT_APP_USUARIOS + '/' + this.state.form._id)
+        axios.put(process.env.REACT_APP_USUARIOS + '/' + this.state.form._id, this.state.form)
             .then((response) => {
-                this.modalInsertar() //cerramos la modal form
+                this.modalInsertar() 
                 this.peticionGet()
             })
             .catch(error => {
@@ -58,10 +71,10 @@ class PageUsuarios extends Component {
     }
 
     peticionDelete = () => {
-        console.log(url + '/'  + this.state.form._id)
-        axios.delete(url + '/' + this.state.form._id, this.state.form)
+        console.log(process.env.REACT_APP_USUARIOS + '/'  + this.state.form._id)
+        axios.delete(process.env.REACT_APP_USUARIOS + '/' + this.state.form._id, this.state.form)
             .then((response) => {
-                this.modalEliminar() //cerramos la modal form
+                this.modalEliminar() 
                 this.peticionGet()
             })
             .catch(error => {
@@ -78,8 +91,19 @@ class PageUsuarios extends Component {
                 usu_email: usuario.usu_email,
                 usu_clave: usuario.usu_clave,
                 usu_nombres: usuario.usu_nombres,
-                usu_apellidos: usuario.usu_apellidos
+                usu_apellidos: usuario.usu_apellidos,
+                per_id:usuario.per_id
             }
+        })
+    }
+
+    seleccionarPermiso = (rol) => {
+        this.setState({
+            form2:{
+                _id:rol._id,
+                per_nombre:rol.per_nombre
+            }
+            
         })
     }
 
@@ -91,19 +115,20 @@ class PageUsuarios extends Component {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
 
-    handleChange = async e => {  /// función para capturar os datos del usuario. Es en 2do plano debe ser asincrona
-        e.persist();           /// y por reso debemos especificar persistencia
-        await this.setState({   /// await regresa la ejecución de la función asincrona despues de terminar
+    handleChange = async e => {  
+        e.persist();           
+        await this.setState({   
             form: {
-                ...this.state.form, /// esta linea sirve para conservar los datos que ya tenia el arreglo
-                [e.target.name]: e.target.value  /// los nombres de los imputs deben ser iguales a los del arreglo
+                ...this.state.form, 
+                [e.target.name]: e.target.value  
             }
         });
-        console.log(this.state.form);  /// probar por consola lo que se guarda
+        console.log(this.state.form);  
     }
 
     componentDidMount() {
         this.peticionGet();
+        this.peticionGet2();
     }
 
     render() {
@@ -220,6 +245,21 @@ class PageUsuarios extends Component {
                                 value={form ? form.usu_apellidos : ''}
                             ></input>
                             <br />
+
+                            <label htmlFor="per_id">Rol</label>
+                            <select class="form-select" 
+                             name="per_id"
+                             id="per_id"
+                                value={form ? form.per_id : ''}
+                                aria-label="Default select example" onChange={this.handleChange}>
+                                <option selected>seleccionar</option>
+                                {this.state.data2.map((rol) => {
+                                    return (
+                                        <option value={rol._id}>{rol.per_nombre}</option>
+                                    );
+                                })}
+                            </select>
+
                         </div>
                     </ModalBody>
                     <ModalFooter>

@@ -24,7 +24,7 @@ class MenuInicial extends Component {
 
     }
     console.log(this.state.stateLogin)
-    if (cookies.get("per_id") === "63a1200b4e37aa088590933d") {
+    if (cookies.get("per_id") === process.env.REACT_APP_IDADMIN) {
       this.setState({ usuadmin: true })
     }
     else {
@@ -64,6 +64,7 @@ class MenuInicial extends Component {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
+
               <li className="nav-item"
               hidden={this.state.stateLogin}>
                 <Link className="nav-link active"
@@ -71,6 +72,7 @@ class MenuInicial extends Component {
                   Inicio
                 </Link>
               </li>
+
               <li className="nav-item"
                 hidden={this.state.stateLogin}>
                 <Link className="nav-link"
@@ -78,6 +80,15 @@ class MenuInicial extends Component {
                   login
                 </Link>
               </li>
+
+              <li className="nav-item"
+                hidden={this.state.stateLogin}>
+                <Link className="nav-link"
+                  to="/PageRegistro">
+                  Registrarse
+                </Link>
+              </li>
+
               <li className="nav-item"
                 hidden={!this.state.usuadmin}>
                 <Link className="nav-link"
@@ -85,6 +96,7 @@ class MenuInicial extends Component {
                   Usuarios
                 </Link>
               </li>
+
               <li className="nav-item"
                 hidden={!this.state.stateLogin}>
                 <Link className="nav-link"
@@ -92,6 +104,7 @@ class MenuInicial extends Component {
                   Eventos
                 </Link>
               </li>
+
               <li className="nav-item"
                 hidden={!this.state.usuadmin}>
                 <Link className="nav-link"
@@ -99,6 +112,7 @@ class MenuInicial extends Component {
                   Deportes
                 </Link>
               </li>
+
               <li className="nav-item"
                 hidden={!this.state.usuadmin}>
                 <Link className="nav-link"
@@ -106,6 +120,7 @@ class MenuInicial extends Component {
                   Equipos
                 </Link>
               </li>
+
               <li className="nav-item"
                 hidden={!this.state.stateLogin}>
                 <Link className="nav-link"
