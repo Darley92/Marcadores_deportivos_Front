@@ -79,7 +79,24 @@ class PageEquipos extends Component {
     modalEliminar = () => {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
-
+    insertarDato = async () => {
+        const equi_nombre = this.state.form.equi_nombre
+        if (equi_nombre === '' ) {
+          alert('Se requiere el dato')
+          return "Datos Vacio"
+    }
+    
+        await axios.get(process.env.REACT_APP_+"/"+equi_nombre)
+        .then(response => {
+            alert('El equipo ya existe')
+            return "El equipo ya existe"
+        }).catch(error => {
+          this.peticionPost();
+        })
+    
+      }
+    
+    
     handleChange = async e => {  
         e.persist();           
         await this.setState({   
