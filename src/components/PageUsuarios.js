@@ -114,6 +114,13 @@ class PageUsuarios extends Component {
     modalEliminar = () => {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
+    
+    insertarDato = () => {
+        if(this.state.form.usu_apellidos === "" || this.state.form.usu_clave === "" || this.state.form.usu_email === "" || this.state.form.usu_nombres === ""){
+            alert("campos vacios")
+            return "campos vacios"
+        }else this.peticionPost()
+    }
 
     handleChange = async e => {  
         e.persist();           
@@ -265,7 +272,7 @@ class PageUsuarios extends Component {
                     <ModalFooter>
                         {
                             this.state.tipoModal === 'insertar' ?
-                                <button className="btn btn-success" onClick={() => this.peticionPost()}>Insertar</button>
+                                <button className="btn btn-success" onClick={() => this.insertarDato()}>Insertar</button>
                                 : <button className="btn btn-success" onClick={() => this.peticionPut()}>Modificar</button>
                         }
                         <button className="btn btn-danger" onClick={() => this.modalInsertar()}>Cancelar</button>
