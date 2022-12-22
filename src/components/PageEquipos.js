@@ -86,7 +86,7 @@ class PageEquipos extends Component {
           return "Datos Vacio"
     }
     
-        await axios.get(process.env.REACT_APP_VERIFICAR+"equipos/equi_nombre/"+"+equi_nombre)
+        await axios.get(process.env.REACT_APP_VERIFICAR+"equipos/equi_nombre/"+ this.state.form.equi_nombre)
         .then(response => {
             alert('El equipo ya existe')
             return "El equipo ya existe"
