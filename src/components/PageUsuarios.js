@@ -115,13 +115,22 @@ class PageUsuarios extends Component {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
     
-    insertarDato = () => {
-        if(this.state.form.usu_apellidos === "" || this.state.form.usu_clave === "" || this.state.form.usu_email === "" || this.state.form.usu_nombres === ""){
-            alert("campos vacios")
-            return "campos vacios"
-        }else this.peticionPost()
-    }
 
+    insertarDato = async () => {
+        if (this.state.form.usu_apellidos === "" || this.state.form.usu_clave === "" || this.state.form.usu_email === "" || this.state.form.usu_nombres === "") {
+          alert('Se requiere el dato')
+          return "Dato Vacio"
+        }
+    
+        await axios.get(process.env.REACT_APP_VALIDAR+"/usuarios/usu_email/"+ this.state.form.usu_email)
+        .then(response => {
+            alert('usuaio ya existe')
+            return "usuario ya existe"
+        }).catch(error => {
+          this.peticionPost();
+        })
+    
+      }
     handleChange = async e => {  
         e.persist();           
         await this.setState({   
