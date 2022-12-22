@@ -200,12 +200,13 @@ class PageEventos extends Component {
     modalEliminar = () => {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
-insertarDato = () => {
-        if(this.state.form.dep_id === "" || this.state.form.equi_id === "" || this.state.form.equi_id2 || this.state.form.mar_fechaEvento==="" || this.state.form.mar_fechaEvento === "" || this.state.form.mar_marcadoresqui1 === "" || this.state.form.mar_marcadoresqui2 === ""){
-           alert("campos vacios") 
-           return "campos vacios"
-        }else this.peticionPost()
-    }
+    
+    insertarDato = async () => {
+        if (this.state.form.dep_id === "" || this.state.form.equi_id === "" || this.state.form.equi_id2 || this.state.form.mar_fechaEvento==="" || this.state.form.mar_fechaEvento === "" || this.state.form.mar_marcadoresqui1 === "" || this.state.form.mar_marcadoresqui2 === "") {
+          alert('Se requiere el dato')
+          return "Datos Vacio"
+    }else this.peticionPost();
+      }
     
     
     handleChange = async e => {  
