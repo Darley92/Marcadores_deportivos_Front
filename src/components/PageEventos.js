@@ -11,9 +11,6 @@ const date = new Date();
 const year = date.getFullYear();
 const day = date.getDate();
 const month = date.getMonth() + 1;
-const fecha = `${year}-${month}-${day}`
-const time = date.toLocaleTimeString('it-IT');
-const usu = cookies.get("_id");
 
 class PageEventos extends Component {
 
