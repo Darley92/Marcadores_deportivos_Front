@@ -122,7 +122,7 @@ class PageUsuarios extends Component {
           return "Dato Vacio"
         }
     
-        await axios.get(process.env.REACT_APP_VALIDAR+"/usuarios/usu_email/"+ this.state.form.usu_email)
+        await axios.get(process.env.REACT_APP_VALIDAR+"usuarios/usu_email/"+ this.state.form.usu_email)
         .then(response => {
             alert('usuaio ya existe')
             return "usuario ya existe"
