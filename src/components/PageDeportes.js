@@ -81,22 +81,6 @@ class PageDeportes extends Component{
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
     
-    insertarDato = async () => {
-        const dep_nombre = this.state.form.dep_nombre
-        if (dep_nombre === '' ) {
-          alert('Se requiere el dato')
-          return "Dato Vacio"
-        }
-    
-        await axios.get(process.env.REACT_APP_VERIFICAR+"deportes/dep_nombre/"+ this.state.form.dep_nombre)
-        .then(response => {
-            alert('Deporte ya existe')
-            return "Deporte ya existe"
-        }).catch(error => {
-          this.peticionPost();
-        })
-    
-      }
 
     handleChange = async e => {  
         e.persist();           
@@ -185,7 +169,7 @@ class PageDeportes extends Component{
                     <ModalFooter>
                         {
                             this.state.tipoModal === 'insertar' ?
-                                <button className="btn btn-success" onClick={() => this.insertarDato()}>Insertar</button>
+                                <button className="btn btn-success" onClick={() => this.peticionPost()}>Insertar</button>
                                 : <button className="btn btn-success" onClick={() => this.peticionPut()}>Modificar</button>
                         }
                         <button className="btn btn-danger" onClick={() => this.modalInsertar()}>Cancelar</button>
