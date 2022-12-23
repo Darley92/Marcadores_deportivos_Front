@@ -201,12 +201,6 @@ class PageEventos extends Component {
         this.setState({ modalEliminar: !this.state.modalEliminar })
     }
     
-    insertarDato = async () => {
-        if (this.state.form.dep_id === "" || this.state.form.equi_id === "" || this.state.form.equi_id2 || this.state.form.mar_fechaEvento==="" || this.state.form.mar_fechaEvento === "" || this.state.form.mar_marcadoresqui1 === "" || this.state.form.mar_marcadoresqui2 === "") {
-          alert('Se requiere el dato')
-          return "Datos Vacio"
-    }else this.peticionPost();
-      }
     
     
     handleChange = async e => {  
@@ -432,7 +426,7 @@ class PageEventos extends Component {
                     <ModalFooter>
                         {
                             this.state.tipoModal === 'insertar' ?
-                                <button className="btn btn-success" onClick={() => this.insertarDato()}>Insertar</button>
+                                <button className="btn btn-success" onClick={() => this.peticionPost()}>Insertar</button>
                                 : <button className="btn btn-success" onClick={() => this.peticionPut()}>Modificar</button>
                         }
                         <button className="btn btn-danger" onClick={() => this.modalInsertar()}>Cancelar</button>
